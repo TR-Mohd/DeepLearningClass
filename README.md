@@ -1,36 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔐 AuthFlow — Login & Registration Portal
 
-## Getting Started
+A modern, premium login and registration website built with **Next.js**, **Supabase Auth**, and deployed on **Vercel**. Features both email/password authentication and Google OAuth sign-in with a stunning glassmorphic UI.
 
-First, run the development server:
+---
+
+## ✨ Features
+
+- **Email/Password Authentication** — Register and log in with traditional credentials
+- **Google Sign-In** — One-click OAuth login via Google
+- **Supabase Backend** — Managed PostgreSQL database with built-in auth
+- **Responsive Design** — Looks great on desktop, tablet, and mobile
+- **Premium UI** — Glassmorphism, smooth animations, and modern aesthetics
+- **Vercel Deployment** — Instant, serverless deployment with CI/CD
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technology                     |
+|--------------|-------------------------------|
+| Framework    | Next.js 14 (App Router)       |
+| Auth         | Supabase Auth                 |
+| Database     | Supabase (PostgreSQL)         |
+| Styling      | CSS Modules (Vanilla CSS)     |
+| Deployment   | Vercel                        |
+| Font         | Inter (Google Fonts)          |
+
+---
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── layout.js              # Root layout with metadata & fonts
+│   ├── page.js                # Landing → redirects to /login
+│   ├── globals.css            # Global design tokens & styles
+│   ├── login/
+│   │   ├── page.js            # Login & Registration page
+│   │   └── login.module.css   # Login page styles
+│   ├── dashboard/
+│   │   └── page.js            # Post-login dashboard (protected)
+│   └── auth/
+│       └── callback/
+│           └── route.js       # OAuth callback handler
+├── lib/
+│   └── supabase.js            # Supabase client initialization
+├── .env.local                 # Environment variables (not committed)
+├── package.json
+├── next.config.js
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** ≥ 18
+- **npm** or **yarn**
+- A **Supabase** project ([supabase.com](https://supabase.com))
+- A **Google Cloud** OAuth client ([console.cloud.google.com](https://console.cloud.google.com))
+
+### 1. Clone & Install
+
+```bash
+git clone <your-repo-url>
+cd task-1
+npm install
+```
+
+### 2. Configure Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+### 3. Supabase Setup
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Navigate to **Settings → API** to get your URL and anon key
+3. Enable **Google Auth** under **Authentication → Providers → Google**
+4. Add your Google OAuth Client ID and Client Secret
+5. Set the redirect URI in Google Console to:
+   ```
+   https://<your-project-ref>.supabase.co/auth/v1/callback
+   ```
+
+### 4. Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 5. Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Option A: Via Vercel CLI
+npm i -g vercel
+vercel
 
-## Learn More
+# Option B: Connect GitHub repo to Vercel Dashboard
+# → vercel.com/new → Import your repository
+```
 
-To learn more about Next.js, take a look at the following resources:
+> **Important:** Add your environment variables (`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`) in the Vercel dashboard under **Settings → Environment Variables**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔒 Authentication Flow
 
-## Deploy on Vercel
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Next.js App
+    participant Supabase as Supabase Auth
+    participant Google as Google OAuth
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    User->>App: Visit /login
+    
+    alt Email/Password
+        User->>App: Enter email & password
+        App->>Supabase: signUp() or signInWithPassword()
+        Supabase-->>App: Session token
+        App-->>User: Redirect to /dashboard
+    end
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    alt Google Sign-In
+        User->>App: Click "Sign in with Google"
+        App->>Supabase: signInWithOAuth({ provider: 'google' })
+        Supabase->>Google: Redirect to Google consent
+        Google-->>Supabase: Auth code callback
+        Supabase-->>App: Redirect to /auth/callback
+        App-->>User: Redirect to /dashboard
+    end
+```
+
+---
+
+## 📄 License
+
+MIT License — feel free to use this project as a starting point for your own apps.
